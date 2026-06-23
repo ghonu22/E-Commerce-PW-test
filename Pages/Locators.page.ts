@@ -1,4 +1,5 @@
 import { Page, Locator } from '@playwright/test';
+import path from 'path';
 
 export class PokemonStorePage {
     readonly page: Page;
@@ -68,9 +69,18 @@ export class PokemonStorePage {
     getItemSubtotalText(id: number): Locator { return this.page.getByTestId(`item-subtotal-${id}`); }
 
     // Navigation Action Flow
+    // async goto() {
+    //     // Replace with your local host path or test context file location
+    //     await this.page.goto('file:///C:/Test/E-Commerce%20PW%20test/EcomPokemon.html'); 
+    // }
+
     async goto() {
-        // Replace with your local host path or test context file location
-        await this.page.goto('file:///C:/Test/E-Commerce%20PW%20test/EcomPokemon.html'); 
+    // 1. Resolve the absolute path relative to this script's location
+    // Adjust the '../' depending on how deep your page object file is nested
+    const localFilePath = path.resolve(__dirname, '../EcomPokemon.html'); 
+    
+    // 2. Build the correct file:// URL dynamically
+    await this.page.goto(`file://${localFilePath}`);
     }
 
     // Core Interaction Wrapper Methods
