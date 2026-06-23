@@ -13,6 +13,10 @@ jobs:
     - uses: actions/setup-node@v4
       with:
         node-version: lts/*
+    - name: Check Environment Versions
+      run: |
+         node -v
+         npm -v
     - name: Install dependencies
       run: npm ci
     - name: Install Playwright Browsers
@@ -25,3 +29,25 @@ jobs:
         name: playwright-report
         path: playwright-report/
         retention-days: 30
+    - name: Send Email Notification
+      uses: dawidd6/action-send-mail@v4
+      with:
+        # SMTP Server configuration (Example using Gmail SMTP)
+        server_address: smtp.gmail.com
+        server_port: 465
+        username: ${{ secrets.EMAIL_USERNAME }}
+        password: ${{ secrets.EMAIL_PASSWORD }}
+        
+        # job.status will now correctly say "success" or "failure"
+        subject: "Playwright Automation Run: ${{ job.status }}"
+        to: gomez1993jose@gmail.com
+        from: Playwright Automation Runner
+        body: |
+          The daily automated test run has completed.
+          
+          Result Status: ${{ job.status }}
+          Repository: ${{ github.repository }}
+          Workflow Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        
+        # Only attach the file if the job actually failed
+        attachments: ${{ job.status == 'failure' && 'playwright-report.tar.gz' || '' }}
